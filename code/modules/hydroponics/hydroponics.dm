@@ -286,15 +286,15 @@
 /obj/machinery/hydroponics/proc/update_icon_plant()
 	var/image/I
 	if(dead)
-		I = image('icons/obj/hydroponics/growing.dmi', icon_state = myseed.icon_dead)
+		I = image(icon = myseed.growing_icon, icon_state = myseed.icon_dead)
 	else if(harvest)
 		if(!myseed.icon_harvest)
-			I = image('icons/obj/hydroponics/growing.dmi', icon_state = "[myseed.icon_grow][myseed.growthstages]")
+			I = image(icon = myseed.growing_icon, icon_state = "[myseed.icon_grow][myseed.growthstages]")
 		else
-			I = image('icons/obj/hydroponics/growing.dmi', icon_state = myseed.icon_harvest)
+			I = image(icon = myseed.growing_icon, icon_state = myseed.icon_harvest)
 	else
 		var/t_growthstate = min(round((age / myseed.maturation) * myseed.growthstages), myseed.growthstages)
-		I = image('icons/obj/hydroponics/growing.dmi', icon_state = "[myseed.icon_grow][t_growthstate]")
+		I = image(icon = myseed.growing_icon, icon_state = "[myseed.icon_grow][t_growthstate]")
 	I.layer = OBJ_LAYER + 0.01
 	overlays += I
 
@@ -671,6 +671,7 @@
 
 /obj/machinery/hydroponics/attackby(obj/item/O, mob/user, params)
 	//Called when mob user "attacks" it with object O
+	add_fingerprint(user)
 	if(istype(O, /obj/item/weapon/reagent_containers/food/snacks/grown/ambrosia/gaia)) //Checked early on so it doesn't have to deal with composting checks
 		if(self_sustaining)
 			user << "<span class='warning'>This [name] is already self-sustaining!</span>"
@@ -679,6 +680,14 @@
 			user << "<span class='warning'>[src] needs to be clear of plants and weeds!</span>"
 			return
 		if(alert(user, "This will make [src] self-sustaining but consume [O] forever. Are you sure?", "[name]", "I'm Sure", "Abort") == "Abort" || !user)
+			return
+		if(!Adjacent(user))
+			return
+		if(self_sustaining)
+			user << "<span class='warning'>This [name] is already self-sustaining!</span>"
+			return
+		if(myseed || weedlevel)
+			user << "<span class='warning'>[src] needs to be clear of plants and weeds!</span>"
 			return
 		user.visible_message("<span class='notice'>[user] gently pulls open the soil for [O] and places it inside.</span>", "<span class='notice'>You tenderly root [O] into [src].</span>")
 		user.drop_item()
@@ -857,6 +866,7 @@
 /obj/machinery/hydroponics/attack_hand(mob/user)
 	if(istype(user, /mob/living/silicon))		//How does AI know what plant is?
 		return
+	add_fingerprint(user)
 	if(harvest)
 		myseed.harvest()
 	else if(dead)
