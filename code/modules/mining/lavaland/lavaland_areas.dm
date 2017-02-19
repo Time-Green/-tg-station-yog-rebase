@@ -3,7 +3,6 @@
 /area/lavaland
 	icon_state = "mining"
 	has_gravity = 1
-	atmos = 0
 
 /area/lavaland/surface
 	name = "Lavaland"
@@ -28,6 +27,7 @@
 /area/lavaland/surface/outdoors
 	name = "Lavaland Wastes"
 	outdoors = 1
+	atmos = 0
 
 /area/lavaland/surface/outdoors/mapgen_protected
 	mapgen_protected = 1
