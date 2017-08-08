@@ -22,6 +22,27 @@
 	var/list/priority_overlays
 
 
+
+
+/atom/New()
+	//atom creation method that preloads variables at creation
+	if(use_preloader && (src.type == _preloader.target_path))//in case the instanciated atom is creating other atoms in New()
+		_preloader.load(src)
+	//atom color stuff
+	if(color)
+		add_atom_colour(color, FIXED_COLOUR_PRIORITY)
+
+	//lighting stuff
+	if(opacity && isturf(loc))
+		loc.UpdateAffectingLights()
+
+	if(luminosity)
+		light = new(src)
+
+	if(SSobj && SSobj.initialized)
+		Initialize(FALSE)
+	//. = ..() //uncomment if you are dumb enough to add a /datum/New() proc
+
 /atom/Destroy()
 	if(alternate_appearances)
 		for(var/aakey in alternate_appearances)
@@ -404,7 +425,8 @@ var/list/blood_splatter_icons = list()
 /atom/proc/spawn_atom_to_world()
 
 //This will be called after the map and objects are loaded
-/atom/proc/initialize()
+/atom/proc/Initialize(mapload)
+	set waitfor = 0
 	return
 
 //the vision impairment to give to the mob whose perspective is set to that atom (e.g. an unfocused camera giving you an impaired vision when looking through it)
