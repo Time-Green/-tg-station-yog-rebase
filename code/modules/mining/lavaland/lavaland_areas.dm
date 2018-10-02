@@ -28,6 +28,7 @@
 /area/lavaland/surface/outdoors
 	name = "Lavaland Wastes"
 	outdoors = 1
+	atmos = 0
 
 /area/lavaland/surface/outdoors/mapgen_protected
 	icon_state = "mapgen_protect"
